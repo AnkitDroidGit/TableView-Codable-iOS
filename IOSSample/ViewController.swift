@@ -55,6 +55,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             }.resume()
         //End implementing URLSession
         
+        
+        
         //        for i in  1...10 {
         //            let student=ArrayItem()
         //            student.name="Student \(i)"
@@ -96,6 +98,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+        
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
@@ -106,7 +109,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         print("\(indexPath.row) clicked")
         print(array[indexPath.row].url ?? "")
-//        UIApplication.shared.open(NSURL(string: array[indexPath.row].html_url!)! as URL, options: [ : ], completionHandler: nil)
+        UIApplication.shared.open(NSURL(string: array[indexPath.row].html_url!)! as URL, options: [ : ], completionHandler: nil)
     }
 }
 
