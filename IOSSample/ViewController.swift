@@ -12,6 +12,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     @IBOutlet weak var tableview: UITableView!
     var array = [ArrayItem]()
+    var selectedNumber: Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,7 +71,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        print(array.count)
+        //        print(array.count)
         return array.count
     }
     
@@ -83,7 +84,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableViewAutomaticDimension
+        if indexPath.row == selectedNumber {
+            return 50 * 2
+        }
+        else
+        {
+            return 50
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -91,9 +98,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         // Dispose of any resources that can be recreated.
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let row = indexPath.row
+        selectedNumber = row;
+        tableview.beginUpdates()
+        tableview.endUpdates()
+        
         print("\(indexPath.row) clicked")
         print(array[indexPath.row].url ?? "")
-        UIApplication.shared.open(NSURL(string: array[indexPath.row].html_url!)! as URL, options: [ : ], completionHandler: nil)
+//        UIApplication.shared.open(NSURL(string: array[indexPath.row].html_url!)! as URL, options: [ : ], completionHandler: nil)
     }
 }
 
