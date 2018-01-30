@@ -14,6 +14,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     var array = [ArrayItem]()
     var selectedNumber: Int?
     
+    var pageNum = 1
+    var shouldLoadMore = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         print("Ankit")
@@ -21,11 +24,23 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         tableview.delegate = self
         navigationItem.title = "REST API"
         
+        self.title = "Header"
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationController?.navigationItem.largeTitleDisplayMode = .never
+        
         //        tableview.estimatedRowHeight = 10
         
         //Implementing URLSession
         //        let urlString = "https://swift.mrgott.pro/blog.json"
-        let urlString = "https://api.github.com/users/AnkitDroidGit/repos"
+        //End implementing URLSession
+        
+        callApi()
+        
+        // Do any additional setup after loading the view, typically from a nib.
+    }
+    
+    func callApi() {
+        let urlString = "https://api.github.com/users/AnkitDroidGit/repos?page=\(pageNum)"
         guard let url = URL(string: urlString) else { return }
         
         URLSession.shared.dataTask(with: url) { (data, response, error) in
@@ -38,14 +53,20 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             //Implement JSON decoding and parsing
             do {
                 //Decode retrived data with JSONDecoder and assing type of Article object
-                let articlesData = try JSONDecoder().decode([ArrayItem].self, from: data!)
+                let articlesData : [ArrayItem] = try JSONDecoder().decode([ArrayItem].self, from: data!)
                 
                 //Get back to the main queue
                 DispatchQueue.main.async {
                     print(articlesData)
-                    self.array = articlesData
-                    
-                    self.tableview.reloadData()
+                    if articlesData.count > 0 {
+                        //self.array.append(articlesData)
+                        self.array.append(contentsOf: articlesData)
+                        
+                        self.tableview.reloadData()
+                    }
+                    else {
+                        self.shouldLoadMore = false
+                    }
                 }
                 
             } catch let jsonError {
@@ -53,24 +74,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
             
             }.resume()
-        //End implementing URLSession
         
-        
-        
-        //        for i in  1...10 {
-        //            let student=ArrayItem()
-        //            student.name="Student \(i)"
-        //            student.rollNo=i
-        //            array.append(student)
-        //        }
-        
-        
-        //tableview.backgroundColor = UIColor.cyan
-        
-        // Do any additional setup after loading the view, typically from a nib.
     }
-    
-    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         //        print(array.count)
@@ -100,6 +105,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         // Dispose of any resources that can be recreated.
         
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let row = indexPath.row
@@ -111,5 +117,26 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         print(array[indexPath.row].url ?? "")
         UIApplication.shared.open(NSURL(string: array[indexPath.row].html_url!)! as URL, options: [ : ], completionHandler: nil)
     }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let lastElement = self.array.count - 3
+        if indexPath.row == lastElement && shouldLoadMore {
+            pageNum = pageNum + 1
+            callApi()
+            
+        }
+    }
+    
+//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//        let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 50))
+//        view.backgroundColor = .red
+//
+//        let lbl = UILabel(frame: view.bounds)
+//        lbl.text = "Header"
+//
+//        view.addSubview(lbl)
+//
+//        return view
+//    }
 }
 
